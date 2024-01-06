@@ -11,7 +11,7 @@ export const doctorRouter = express.Router();
 
 
 //get all the medecin
-doctorRouter.get('/', authenticateToken, async (req, res) => {
+doctorRouter.get('/', async (req, res) => {
     try {
       const users = await UserModel.find();
       res.json(users);
