@@ -3,6 +3,8 @@ import express from 'express';
 import { doctorRouter } from './routes/doctors.routes.js';
 import { patientRouter } from './routes/patients.routes.js';
 import { appointmentsRouter } from './routes/appointment.routes.js';
+import dotenv from 'dotenv'
+dotenv.config()
 
 
 
@@ -12,13 +14,15 @@ app.use('/medecins', doctorRouter);
 app.use('/patients', patientRouter );
 app.use('/appointment', appointmentsRouter);
 
-mongoose.connect('mongodb://localhost/medecinTCX', {
+const port=process.env.PORT
+
+mongoose.connect(process.env.MONGODB_CONNECT_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(3000, () => {
+    app.listen(port, () => {
       console.log('Server is running');
     });
   })
