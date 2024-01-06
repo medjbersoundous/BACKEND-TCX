@@ -65,56 +65,50 @@ dotenv.config();
 
 
 // ajouter patient
-patientRouter.post('/',authenticateToken, async (req, res) => {
-    const { lastname, firstname, age, gender, medecinLastname, medecinFirstname, Adress ,Phone } = req.body;
+patientRouter.post('/', authenticateToken, async (req, res) => {
+  const { lastname, firstname, age, gender, Adress, Phone } = req.body;
   
-    try {
-        // Find the doctor using lastname and firstname
-        const medecin = await UserModel.findOne({
-            lastname: medecinLastname,
-            firstname: medecinFirstname,
-        });
-  
-        if (!medecin) {
-            return res.status(404).json({ error: 'Medecin not found' });
-        }
-  
-        const data = new PatientModel({
-            lastname,
-            firstname,
-            age,
-            gender,
-            Adress,
-            Phone,
-            medecinID: medecin._id,
-            medecinLastname,
-            medecinFirstname,
-        });
-  
-        const val = await data.save();
-  
-        // Update the associated medecin's patients array with the new patient's details
-        await UserModel.findOneAndUpdate(
-            { _id: medecin._id },
-            { 
-                $push: { 
-                    patients: {
-                        patientID: data._id,
-                        lastname,
-                        firstname,
-                    },
-                },
-            },
-            { new: true }
-        );
-  
-        res.json(val);
-        console.log('Patient added');
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Server Error' });
-    }
-  });
+  const medecinID = req.user.userId; 
+
+  try {
+      const medecin = await UserModel.findById(medecinID);
+
+      if (!medecin) {
+          return res.status(404).json({ error: 'Medecin not found' });
+      }
+
+      const data = new PatientModel({
+          lastname,
+          firstname,
+          age,
+          gender,
+          Adress,
+          Phone,
+          medecinID: medecin._id,
+      });
+
+      const val = await data.save();
+      await UserModel.findOneAndUpdate(
+          { _id: medecin._id },
+          { 
+              $push: { 
+                  patients: {
+                      patientID: data._id,
+                      lastname,
+                      firstname,
+                  },
+              },
+          },
+          { new: true }
+      );
+
+      res.json(val);
+      console.log('Patient added');
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server Error' });
+  }
+});
 
 // delete patient
 patientRouter.delete('/:id',authenticateToken, async(req,res)=>{
