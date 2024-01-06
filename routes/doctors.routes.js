@@ -99,8 +99,9 @@ doctorRouter.post("/register", async (req, res) => {
 
     const accessToken = generateAccessToken(newUser._id);
     const refreshToken = generateRefreshToken(newUser._id);
+ 
 
-    res.status(200).json({ accessToken, refreshToken });
+    res.status(200).json({ accessToken, refreshToken,  userId: newUser._id });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
@@ -113,12 +114,10 @@ doctorRouter.post("/login", async (req, res) => {
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
-
     const user = await UserModel.findOne({ email: req.body.email });
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-
     const passwordMatch = await bcrypt.compare(
       req.body.password,
       user.password
@@ -126,11 +125,9 @@ doctorRouter.post("/login", async (req, res) => {
     if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
-
-    res.status(200).json({ accessToken, refreshToken });
+    res.status(200).json({ accessToken, refreshToken, userId: user._id });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
