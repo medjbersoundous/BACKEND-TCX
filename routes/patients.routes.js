@@ -33,16 +33,7 @@ dotenv.config();
   
   
   
-  //get all the patients
-  patientRouter.get('/',authenticateToken, async (req, res) => {
-    try {
-      const patients = await PatientModel.find();
-      res.json(patients);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Server Error' });
-    }
-  });
+
   //get one patient by id
   patientRouter.get('/:id',authenticateToken, async (req, res) => {
     const userId = req.params.id;
@@ -55,6 +46,17 @@ dotenv.config();
       }
   
       res.json(user);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server Error' });
+    }
+  });
+
+  //get all the patients
+  patientRouter.get('/',authenticateToken, async (req, res) => {
+    try {
+      const patients = await PatientModel.find();
+      res.json(patients);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'Server Error' });

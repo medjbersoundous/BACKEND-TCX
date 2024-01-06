@@ -10,6 +10,26 @@ dotenv.config();
 export const doctorRouter = express.Router();
 
 
+
+doctorRouter.get('/:id', async (req, res) => {
+  const userId = req.params.id;
+  console.log(userId);
+
+  try {
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Medecin not found' });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
+
+
 //get all the medecin
 doctorRouter.get('/', async (req, res) => {
     try {
@@ -22,24 +42,7 @@ doctorRouter.get('/', async (req, res) => {
   });
   //get one medecin by id
   
-  doctorRouter.get('/:id', authenticateToken, async (req, res) => {
-    const userId = req.params.id;
-    console.log(userId);
-  
-    try {
-      const user = await UserModel.findById(userId);
-  
-      if (!user) {
-        return res.status(404).json({ error: 'Medecin not found' });
-      }
-  
-      res.json(user);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Server Error' });
-    }
-  });
-  
+
 
 // sign up medecin - creation 
 const registrationSchema = Joi.object({

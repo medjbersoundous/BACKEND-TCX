@@ -13,16 +13,7 @@ const joiAppointmentSchema = Joi.object({
   endDate: Joi.date().min(Joi.ref("startDate")).required(),
 });
 
-appointmentsRouter.get('/',authenticateToken, async (req, res) => {
-    try {
-      const appointments = await appointmentsModel.find();
-      console.log("Appointments:", appointments);
-      res.json(appointments);
-    } catch (error) {
-      console.error("Error fetching appointments:", error);
-      res.status(500).send("Internal Server Error");
-    }
-  });
+
   
 
 appointmentsRouter.post("/",authenticateToken, async (req, res) => {
@@ -133,5 +124,17 @@ appointmentsRouter.delete("/:id",authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+appointmentsRouter.get('/',authenticateToken, async (req, res) => {
+  try {
+    const appointments = await appointmentsModel.find();
+    console.log("Appointments:", appointments);
+    res.json(appointments);
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
