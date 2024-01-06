@@ -49,6 +49,7 @@ const registrationSchema = Joi.object({
   gender:Joi.string().max(30).required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
+  specialite:Joi.string().required(),
   phonenumber: Joi.string()
     .pattern(/^(05|06|07)\d{8}$/)
     .required(),
@@ -89,6 +90,7 @@ doctorRouter.post("/register", async (req, res) => {
       username: req.body.username,
       email: req.body.email,
       gender:req.body.gender,
+      specialite:req.body.specialite,
       password: hashedPassword,
       phonenumber: req.body.phonenumber,
     });

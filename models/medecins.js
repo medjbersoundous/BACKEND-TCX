@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
+    specialite:{
+        type:String,
+        required:true
+    },
     patients: [
         {
             patientID: {
