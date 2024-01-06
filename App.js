@@ -2,12 +2,15 @@ import mongoose from 'mongoose';
 import express from 'express';
 import { doctorRouter } from './routes/doctors.routes.js';
 import { patientRouter } from './routes/patients.routes.js';
+import { appointmentsRouter } from './routes/appointment.routes.js';
+
 
 
 const app = express();
 app.use(express.json())
 app.use('/medecins', doctorRouter); 
 app.use('/patients', patientRouter );
+app.use('/appointment', appointmentsRouter);
 
 mongoose.connect('mongodb://localhost/medecinTCX', {
   useNewUrlParser: true,
@@ -26,4 +29,3 @@ mongoose.connect('mongodb://localhost/medecinTCX', {
 app.get('/', (req, res) => {
   res.send('home page');
 });
-

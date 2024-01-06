@@ -1,11 +1,13 @@
 import express from "express";
 import { PatientModel } from "../models/patients.js";
 import { UserModel } from "../models/medecins.js";
+import { authenticateToken } from "../middlewares/auth.js";
+import dotenv from "dotenv";
 export const patientRouter=express.Router()
-
+dotenv.config();
   //update patient
   // Update a patient by ID
-  patientRouter.put('/:id', async (req, res) => {
+  patientRouter.put('/:id',authenticateToken, async (req, res) => {
     const patientId = req.params.id;
     const {  
       firstname, lastname, age, gender, Phone, Adress } = req.body;
@@ -32,7 +34,7 @@ export const patientRouter=express.Router()
   
   
   //get all the patients
-  patientRouter.get('/', async (req, res) => {
+  patientRouter.get('/',authenticateToken, async (req, res) => {
     try {
       const patients = await PatientModel.find();
       res.json(patients);
@@ -42,7 +44,7 @@ export const patientRouter=express.Router()
     }
   });
   //get one patient by id
-  patientRouter.get('/:id', async (req, res) => {
+  patientRouter.get('/:id',authenticateToken, async (req, res) => {
     const userId = req.params.id;
   
     try {
@@ -61,7 +63,7 @@ export const patientRouter=express.Router()
 
 
 // ajouter patient
-patientRouter.post('/', async (req, res) => {
+patientRouter.post('/',authenticateToken, async (req, res) => {
     const { lastname, firstname, age, gender, medecinLastname, medecinFirstname, Adress ,Phone } = req.body;
   
     try {
@@ -113,7 +115,7 @@ patientRouter.post('/', async (req, res) => {
   });
 
 // delete patient
-patientRouter.delete('/:id', async(req,res)=>{
+patientRouter.delete('/:id',authenticateToken, async(req,res)=>{
     const patientId = req.params.id;
 
     try {

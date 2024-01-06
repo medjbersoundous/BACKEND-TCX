@@ -4,12 +4,14 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { UserModel } from "../models/medecins.js";
 import dotenv from "dotenv";
+import { authenticateToken } from "../middlewares/auth.js";
 dotenv.config();
 
 export const doctorRouter = express.Router();
 
+
 //get all the medecin
-doctorRouter.get('/', async (req, res) => {
+doctorRouter.get('/', authenticateToken, async (req, res) => {
     try {
       const users = await UserModel.find();
       res.json(users);
@@ -20,8 +22,9 @@ doctorRouter.get('/', async (req, res) => {
   });
   //get one medecin by id
   
-  doctorRouter.get('/:id', async (req, res) => {
+  doctorRouter.get('/:id', authenticateToken, async (req, res) => {
     const userId = req.params.id;
+    console.log(userId);
   
     try {
       const user = await UserModel.findById(userId);
@@ -40,9 +43,9 @@ doctorRouter.get('/', async (req, res) => {
 
 // sign up medecin - creation 
 const registrationSchema = Joi.object({
-  username: Joi.string().min(3).max(30).required(),
-  lastname:Joi.string().min(3).max(30).required(),
-  firstname:Joi.string().min(3).max(30).required(),
+  username: Joi.string().required(),
+  lastname:Joi.string().required(),
+  firstname:Joi.string().required(),
   gender:Joi.string().max(30).required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
@@ -52,7 +55,7 @@ const registrationSchema = Joi.object({
 });
 
 const loginSchema = Joi.object({
-  username: Joi.string().min(3).max(30).required(),
+  email: Joi.string().required(),
   password: Joi.string().min(6).required(),
 });
 function generateAccessToken(userId) {
@@ -109,7 +112,7 @@ doctorRouter.post("/login", async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const user = await UserModel.findOne({ username: req.body.username });
+    const user = await UserModel.findOne({ email: req.body.email });
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
@@ -132,7 +135,7 @@ doctorRouter.post("/login", async (req, res) => {
   }
 });
 
-doctorRouter.post("/refresh-token", async (req, res) => {
+doctorRouter.post("/refresh-token",authenticateToken, async (req, res) => {
   const refreshToken = req.body.refreshToken;
 
   if (!refreshToken) {
@@ -159,7 +162,7 @@ doctorRouter.post("/refresh-token", async (req, res) => {
 
 
 //update medecin 'put'
-doctorRouter.put('/:id', async (req, res) => {
+doctorRouter.put('/:id', authenticateToken, async (req, res) => {
     const medecinId = req.params.id;
     const { username, lastname, firstname, password, gender, email, phonenumber, patienID } = req.body;
   
@@ -182,7 +185,7 @@ doctorRouter.put('/:id', async (req, res) => {
   });
 
   // supprimer doctor
-  doctorRouter.delete('/:id', async (req, res) => {
+  doctorRouter.delete('/:id',authenticateToken, async (req, res) => {
     const medecinId = req.params.id;
 
     try {
